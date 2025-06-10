@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const workoutSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    type: String, // Cambiado a String para Firebase UID
+    required: true,
+    index: true // Agregar índice para consultas más rápidas
   },
   date: {
     type: Date,
@@ -12,15 +12,25 @@ const workoutSchema = new mongoose.Schema({
   },
   activity: {
     type: String,
-    required: true
+    required: true,
+    enum: ['Cardio', 'Pesas', 'Yoga', 'Natación', 'Correr', 'Ciclismo', 'Crossfit', 'Pilates', 'Otro']
   },
   duration: {
     type: Number,
-    required: true
+    required: true,
+    min: 1 // Duración mínima de 1 minuto
   },
   notes: {
-    type: String
+    type: String,
+    maxlength: 500 // Limitar notas a 500 caracteres
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 });
+
+// Índice compuesto para consultas eficientes por usuario y fecha
+workoutSchema.index({ userId: 1, date: -1 });
 
 module.exports = mongoose.model('Workout', workoutSchema);
